@@ -2,7 +2,7 @@ name: Builds
 on:
   push:
     branches:
-      - '**'
+      - 'wip'
   pull_request:
   schedule:
     - cron: '0 0 * * *'
@@ -58,7 +58,7 @@ jobs:
   linux:
     if: (github.event_name != 'schedule') || (github.repository == 'mstorsjo/llvm-mingw')
     needs: [prepare]
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - name: Build
@@ -67,17 +67,17 @@ jobs:
           MINGW_W64_VERSION: ${{needs.prepare.outputs.MINGW_W64_VERSION}}
           TAG: ${{needs.prepare.outputs.TAG}}
         run: |
-          sudo apt-get update && sudo apt-get install ninja-build
+          sudo apt-get update && sudo apt-get install git clang cmake ca-certificates ninja-build make llvm python3 lld python3-distutils
+          sudo apt-get install libunwind-$(echo "__clang_major__" | clang -E -P -x c -)-dev
           # Skip dynamic library dependencies that might make it harder to
           # run the binaries on other distros (and that have little use within
           # llvm-mingw).
-          LLVM_CMAKEFLAGS="-DLLVM_ENABLE_LIBXML2=OFF -DLLVM_ENABLE_TERMINFO=OFF -DLLDB_ENABLE_PYTHON=OFF" ./build-all.sh $(pwd)/install/llvm-mingw --disable-clang-tools-extra
+          ./build-all.sh $(pwd)/install/llvm-mingw --host-clang --disable-clang-tools-extra
           .github/workflows/store-version.sh install/llvm-mingw/versions.txt
-          cd install
           DISTRO=ubuntu-$(grep DISTRIB_RELEASE /etc/lsb-release | cut -f 2 -d =)-$(uname -m)
-          NAME=llvm-mingw-$TAG-ucrt-$DISTRO
-          mv llvm-mingw $NAME
-          tar -Jcf ../$NAME.tar.xz $NAME
+          NAME=llvm-mingw-$TAG-ucrt-$DISTRO-system
+          tar -Jcf $NAME.tar.xz -C install --format=ustar --sort=name --numeric-owner --owner=0 --group=0 --transform="s,^\./\.,${NAME},S" ./.
+          RUN_I686=false RUN_X86_64=false ./run-tests.sh $(pwd)/install/llvm-mingw
       - uses: actions/upload-artifact@v3
         with:
           name: linux-ucrt-x86_64-toolchain
