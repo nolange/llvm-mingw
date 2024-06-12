@@ -3,3 +3,6 @@
 *.lib
 *.dll.a
 *.pdb
+
+/build/
+/_build/

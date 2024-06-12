@@ -1,0 +1,43 @@
+{
+  "version": 3,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 17
+  },
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "generator": "Ninja",
+      "binaryDir": "_build/${presetName}"
+    },
+    {
+      "name": "llvm-mingw_win",
+      "displayName": "LLVM Mingw Toolchain",
+      "description": "LLVM Mingw Toolchain",
+      "inherits": [
+        "base"
+      ],
+      "toolchainFile": "$env{ProgramFiles}/llvm-mingw/share/cmake/llvm-mingw_toolchainfile.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Windows"
+      }
+    },
+    {
+      "name": "llvm-mingw",
+      "displayName": "LLVM Mingw Toolchain",
+      "description": "LLVM Mingw Toolchain",
+      "inherits": [
+        "base"
+      ],
+      "toolchainFile": "/opt/llvm-mingw/share/cmake/llvm-mingw_toolchainfile.cmake",
+      "condition": {
+        "type": "equals",
+        "lhs": "${hostSystemName}",
+        "rhs": "Linux"
+      }
+    }
+  ]
+}
