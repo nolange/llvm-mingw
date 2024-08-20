@@ -32,7 +32,7 @@ elseif(CMAKE_HOST_WIN32 AND NOT CMAKE_SYSTEM_PROCESSOR)
   string(REGEX REPLACE "-.*" "" CMAKE_SYSTEM_PROCESSOR "${_respath}")
   # save the value for later and tell CMake its important to pass to future invokations
   set(LLVM_TOOLCHAIN_SYSTEM_PROCESSOR ${CMAKE_SYSTEM_PROCESSOR})
-  set(CMAKE_TRY_COMPILE_PLATFORM_VARIABLES LLVM_TOOLCHAIN_SYSTEM_PROCESSOR);
+  set(CMAKE_TRY_COMPILE_PLATFORM_VARIABLES LLVM_TOOLCHAIN_SYSTEM_PROCESSOR)
   # If you encounter build/runtime issues, this might be relevant information
   message(VERBOSE "llvm-mingw_toolchainfile: using Target CPU ${CMAKE_SYSTEM_PROCESSOR} on Host CPU ${CMAKE_HOST_SYSTEM_PROCESSOR}")
 elseif(NOT CMAKE_SYSTEM_PROCESSOR)
